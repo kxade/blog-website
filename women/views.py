@@ -6,7 +6,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, logout
-
 from .forms import *
 from .models import *
 from .utils import *
@@ -15,7 +14,7 @@ from .utils import *
 class WomenHome(DataMixin, ListView):
     model = Women
     template_name = 'women/index.html'
-    context_object_name = 'posts'\
+    context_object_name = 'posts'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -24,17 +23,6 @@ class WomenHome(DataMixin, ListView):
 
     def get_queryset(self):
         return Women.objects.filter(is_published=True)
-
-
-'''def index(request):
-    
-    context = {
-        'menu': menu, 
-        'title': 'Главная страница',
-        'cat_selected': 0
-        }
-
-    return render(request, 'women/index.html', context = context)'''
 
 
 def about(request):
@@ -54,42 +42,15 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
-
-
-'''def addpage(request):
-    if request.method == 'POST':
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            """#print(form.cleaned_data)
-            try:
-                Women.objects.create(**form.cleaned_data)
-                return redirect('home')
-            except:
-                form.add_error(None, 'Ошибка добавления поста')"""
-
-            form.save()
-            return redirect('home')
-
-    else:
-        form = AddPostForm()
-    return render(request, 'women/addpage.html', {'form': form, 'menu': menu, 'title': 'Добавление статьи'})'''
-
 def contact(request):
     return HttpResponse('Обратная связь')
 
-"""def login(request):
-    return HttpResponse('Авторизация')"""
 
 def categories(request, catid):
     if request.GET:
         print(request.GET)
     return HttpResponse(f'<h1>Статьи по категориям</h1><p>{catid}</p>')
 
-def archive(request, year):
-    if int(year) > 2022:
-        return redirect('home', permanent=True
-        )
-    return HttpResponse(f'<h1>Архив по годам</h1><p>{year}</p>')
 
 def pageNotFound(request, exception):
     return HttpResponseNotFound('<h1>Страница не найдена</h1>')
@@ -108,20 +69,6 @@ class ShowPost(DataMixin, DetailView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
-
-'''def show_post(request, post_slug):
-    post = get_object_or_404(Women, slug=post_slug)
-
-    context = {
-        'post': post,
-        'menu': menu,
-        'title': post.title,
-        'cat_selected': post.cat_id
-    }
-
-    return render(request, 'women/post.html', context=context)'''
-
-
 class WomenCategory(DataMixin, ListView):
     model = Women
     template_name = 'women/index.html'
@@ -137,16 +84,6 @@ class WomenCategory(DataMixin, ListView):
                                       cat_selected=context['posts'][0].cat_id)
         return dict(list(context.items()) + list(c_def.items()))
 
-'''def show_category(request, cat_slug):
-    cat_id = Category.objects.get(slug=cat_slug).id
-
-    context = {
-        'menu': menu, 
-        'title': 'Отображение по рубрикам',
-        'cat_selected': cat_id
-        }
-
-    return render(request, 'women/index.html', context = context)'''
 
 class RegisterUser(DataMixin, CreateView):
     form_class = RegisterUserForm
