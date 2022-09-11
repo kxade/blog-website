@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, FormView
+from django.views.generic import ListView, DetailView, CreateView, FormView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
@@ -25,8 +25,13 @@ class WomenHome(DataMixin, ListView):
         return Women.objects.filter(is_published=True).select_related('cat')
 
 
-def about(request):
-    return render(request, 'women/about.html', {'menu': menu, 'title': 'О сайте'})
+class AboutView(DataMixin, TemplateView):
+    template_name = 'women/about.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title='О сайте')
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 class AddPage(LoginRequiredMixin, DataMixin, CreateView):
@@ -42,9 +47,6 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
-def contact(request):
-    return HttpResponse('Обратная связь')
-
 class ContactFormView(DataMixin, FormView):
     form_class = ContactForm
     template_name = 'women/contact.html'
@@ -58,10 +60,6 @@ class ContactFormView(DataMixin, FormView):
     def form_valid(self, form):
         print(form.cleaned_data)
         return redirect('home')
-
-
-def pageNotFound(request, exception):
-    return HttpResponseNotFound('<h1>Страница не найдена</h1>')
 
 
 class ShowPost(DataMixin, DetailView):
@@ -126,3 +124,7 @@ class LoginUser(DataMixin, LoginView):
 def logout_user(request):
     logout(request)
     return redirect('home')
+
+
+def pageNotFound(request, exception):
+    return HttpResponseNotFound('<h1>Страница не найдена</h1>')
